@@ -41,7 +41,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export function RectangleRadiusForm() {
-  const [innerRadius, setInnerRadius] = useState<number | null>(null);
+  const [innerRadius, setInnerRadius] = useState<string | null>(null);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -65,7 +65,11 @@ export function RectangleRadiusForm() {
       const minRadius = radiusA / Math.PI; // Minimum radius is outer radius divided by pi
 
       const calculatedInnerRadius = Math.max(minRadius, radiusA - dist);
-      setInnerRadius(calculatedInnerRadius);
+      setInnerRadius(
+        Number.isInteger(calculatedInnerRadius)
+          ? String(calculatedInnerRadius)
+          : calculatedInnerRadius.toFixed(2)
+      );
     };
 
     const subscription = form.watch(calculateInnerRadius);
@@ -139,11 +143,17 @@ export function RectangleRadiusForm() {
             </FormItem>
           )}
         />
-        {innerRadius !== null && (
-          <div>
-            <h2>Calculated Inner Radius: {innerRadius.toFixed(2)}</h2>
-          </div>
-        )}
+        <FormItem>
+          <FormLabel>Calculated Inner Radius</FormLabel>
+          <FormControl>
+            <Input
+              placeholder="Calculated Inner Radius"
+              type="text"
+              value={innerRadius || ""}
+              disabled
+            />
+          </FormControl>
+        </FormItem>
         <Button type="submit">Calculate</Button>
       </form>
     </Form>
