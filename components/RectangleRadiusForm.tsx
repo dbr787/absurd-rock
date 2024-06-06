@@ -13,7 +13,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { Input } from "@/components/ui/input";
+import {
+  ClipboardIcon,
+  ClipboardCopyIcon,
+  CheckIcon,
+  CheckCircledIcon,
+} from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   outerRadius: z
@@ -42,6 +56,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState<string>("");
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -98,6 +113,15 @@ export function RectangleRadiusForm() {
     }
   };
 
+  const handleCopy = () => {
+    if (innerRadius) {
+      navigator.clipboard.writeText(innerRadius).then(() => {
+        setCopySuccess("Copied!");
+        setTimeout(() => setCopySuccess(""), 2000); // Clear message after 2 seconds
+      });
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
@@ -145,16 +169,42 @@ export function RectangleRadiusForm() {
         />
         <FormItem>
           <FormLabel>Calculated Inner Radius</FormLabel>
-          <FormControl>
-            <Input
-              placeholder="Calculated Inner Radius"
-              type="text"
-              value={innerRadius || ""}
-              disabled
-            />
-          </FormControl>
+          <div className="relative">
+            <FormControl>
+              <Input
+                placeholder="Calculated Inner Radius"
+                type="text"
+                value={innerRadius || ""}
+                disabled
+                className="pr-10" // Add padding to the right to accommodate the icon
+              />
+            </FormControl>
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    // variant="outline"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1 h-7 w-7 rounded-sm text-gray-400 cursor-pointer hover:text-gray-600"
+                    onClick={handleCopy}
+                  >
+                    <ClipboardCopyIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy to clipboard</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          {copySuccess && (
+            <span className="ml-2 text-green-500">{copySuccess}</span>
+          )}
         </FormItem>
-        <Button type="submit">Calculate</Button>
+        <Button type="submit" disabled>
+          Calculate
+        </Button>
       </form>
     </Form>
   );

@@ -15,7 +15,7 @@ import { PanelLeftClose } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="p-2 flex space-x-2 space-y-8">
+    <div className="p-8 flex space-x-2 space-y-8">
       {/* <div className="w-80">
         <RadiusCalculator />
       </div> */}
