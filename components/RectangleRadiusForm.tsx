@@ -13,14 +13,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import { Input } from "@/components/ui/input";
 import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
 
@@ -53,7 +51,6 @@ export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
-  const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -115,7 +112,6 @@ export function RectangleRadiusForm() {
       navigator.clipboard.writeText(innerRadius).then(() => {
         setCopySuccess(true);
         setTooltipText("Copied!");
-        setTooltipOpen(true);
         setTimeout(() => {
           setCopySuccess(false);
           setTooltipText("Copy to clipboard");
@@ -183,7 +179,7 @@ export function RectangleRadiusForm() {
               />
             </FormControl>
             <TooltipProvider delayDuration={0}>
-              <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+              <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
@@ -194,8 +190,6 @@ export function RectangleRadiusForm() {
                         : "text-gray-400 cursor-pointer hover:text-gray-600"
                     }`}
                     onClick={!copySuccess ? handleCopy : undefined}
-                    onMouseEnter={() => !copySuccess && setTooltipOpen(true)}
-                    onMouseLeave={() => !copySuccess && setTooltipOpen(false)}
                     disabled={copySuccess}
                   >
                     {copySuccess ? <CheckIcon /> : <ClipboardCopyIcon />}
