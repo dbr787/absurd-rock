@@ -179,7 +179,8 @@ export function RectangleRadiusForm() {
                 type="text"
                 value={innerRadius || ""}
                 disabled
-                className="pr-10 cursor-default" // Add padding to the right to accommodate the icon and set cursor to default
+                className="pr-10" // Tailwind padding class
+                style={{ cursor: "default" }} // Inline style for default cursor
               />
             </FormControl>
             <TooltipProvider delayDuration={0}>
