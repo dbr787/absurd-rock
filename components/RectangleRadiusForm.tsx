@@ -119,8 +119,7 @@ export function RectangleRadiusForm() {
         setTimeout(() => {
           setCopySuccess(false);
           setTooltipText("Copy to clipboard");
-          setTooltipOpen(false);
-        }, 2000); // Reset after 2 seconds
+        }, 3000); // Reset after 3 seconds
       });
     }
   };
@@ -172,38 +171,37 @@ export function RectangleRadiusForm() {
         />
         <FormItem>
           <FormLabel>Calculated Inner Radius</FormLabel>
-          <div className="relative">
+          <div className="relative group">
             <FormControl>
               <Input
                 placeholder="Calculated Inner Radius"
                 type="text"
                 value={innerRadius || ""}
                 disabled
-                className="pr-10" // Tailwind padding class
+                className="pr-10 cursor-default" // Add padding to the right to accommodate the icon and set cursor to default
                 style={{ cursor: "default" }} // Inline style for default cursor
               />
             </FormControl>
             <TooltipProvider delayDuration={0}>
               <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
                 <TooltipTrigger asChild>
-                  {copySuccess ? (
-                    <div className="absolute right-1 top-1 flex items-center justify-center h-7 w-7">
-                      <CheckIcon className="text-green-500" />
-                    </div>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-1 top-1 h-7 w-7 rounded-sm text-gray-400 cursor-pointer hover:text-gray-600"
-                      onClick={handleCopy}
-                      onMouseEnter={() => setTooltipOpen(true)}
-                      onMouseLeave={() => setTooltipOpen(false)}
-                    >
-                      <ClipboardCopyIcon />
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm disabled:opacity-100 disabled:pointer-events-auto transition-opacity duration-200 ${
+                      copySuccess
+                        ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
+                        : "text-gray-400 cursor-pointer hover:text-gray-600"
+                    }`}
+                    onClick={!copySuccess ? handleCopy : undefined}
+                    onMouseEnter={() => !copySuccess && setTooltipOpen(true)}
+                    onMouseLeave={() => !copySuccess && setTooltipOpen(false)}
+                    disabled={copySuccess}
+                  >
+                    {copySuccess ? <CheckIcon /> : <ClipboardCopyIcon />}
+                  </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" align="center">
                   <p>{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
