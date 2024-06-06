@@ -22,12 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { Input } from "@/components/ui/input";
-import {
-  ClipboardIcon,
-  ClipboardCopyIcon,
-  CheckIcon,
-  CheckCircledIcon,
-} from "@radix-ui/react-icons";
+import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   outerRadius: z
@@ -56,7 +51,9 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
-  const [copySuccess, setCopySuccess] = useState<string>("");
+  const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
+  const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -116,8 +113,14 @@ export function RectangleRadiusForm() {
   const handleCopy = () => {
     if (innerRadius) {
       navigator.clipboard.writeText(innerRadius).then(() => {
-        setCopySuccess("Copied!");
-        setTimeout(() => setCopySuccess(""), 2000); // Clear message after 2 seconds
+        setCopySuccess(true);
+        setTooltipText("Copied!");
+        setTooltipOpen(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+          setTooltipText("Copy to clipboard");
+          setTooltipOpen(false);
+        }, 2000); // Reset after 2 seconds
       });
     }
   };
@@ -176,35 +179,37 @@ export function RectangleRadiusForm() {
                 type="text"
                 value={innerRadius || ""}
                 disabled
-                className="pr-10" // Add padding to the right to accommodate the icon
+                className="pr-10 cursor-default" // Add padding to the right to accommodate the icon and set cursor to default
               />
             </FormControl>
             <TooltipProvider delayDuration={0}>
-              <Tooltip>
+              <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
                 <TooltipTrigger asChild>
-                  <Button
-                    // variant="outline"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1 h-7 w-7 rounded-sm text-gray-400 cursor-pointer hover:text-gray-600"
-                    onClick={handleCopy}
-                  >
-                    <ClipboardCopyIcon />
-                  </Button>
+                  {copySuccess ? (
+                    <div className="absolute right-1 top-1 flex items-center justify-center h-7 w-7">
+                      <CheckIcon className="text-green-500" />
+                    </div>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1 h-7 w-7 rounded-sm text-gray-400 cursor-pointer hover:text-gray-600"
+                      onClick={handleCopy}
+                      onMouseEnter={() => setTooltipOpen(true)}
+                      onMouseLeave={() => setTooltipOpen(false)}
+                    >
+                      <ClipboardCopyIcon />
+                    </Button>
+                  )}
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Copy to clipboard</p>
+                  <p>{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          {copySuccess && (
-            <span className="ml-2 text-green-500">{copySuccess}</span>
-          )}
         </FormItem>
-        <Button type="submit" disabled>
-          Calculate
-        </Button>
+        <Button type="submit">Calculate</Button>
       </form>
     </Form>
   );

@@ -19,7 +19,7 @@ export default function Home() {
       {/* <div className="w-80">
         <RadiusCalculator />
       </div> */}
-      <div className="w-80">
+      <div className="w-64">
         <RectangleRadiusForm />
       </div>
 
