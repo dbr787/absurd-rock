@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Corrected import statement
 import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
@@ -51,6 +51,7 @@ export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -112,7 +113,10 @@ export function RectangleRadiusForm() {
       navigator.clipboard.writeText(innerRadius).then(() => {
         setTooltipText("Copied!");
         setTooltipOpen(true);
-        setTimeout(() => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
           setTooltipText("Copy to clipboard");
         }, 3000); // Reset after 3 seconds
       });
