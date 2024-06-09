@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -153,10 +153,7 @@ export function RectangleRadiusForm() {
     let sanitizedValue = value.replace(/[^0-9]/g, ""); // Remove non-digit characters
     sanitizedValue = sanitizedValue.replace(/^0+(?!$)/, ""); // Remove leading zeros but keep a single "0" if it's the only character
     const numericValue = parseInt(sanitizedValue, 10);
-    if (numericValue > 1024) {
-      return "1024";
-    }
-    return sanitizedValue;
+    return numericValue > 1024 ? "1024" : sanitizedValue;
   };
 
   const handleInputChange = (
@@ -165,11 +162,6 @@ export function RectangleRadiusForm() {
   ) => {
     const sanitizedValue = sanitizeInput(e.target.value);
     field.onChange(Number(sanitizedValue)); // Update field with sanitized numeric value
-  };
-
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-    const sanitizedValue = sanitizeInput(e.target.value);
-    field.onChange(Number(sanitizedValue)); // Ensure field value is a number
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -199,7 +191,6 @@ export function RectangleRadiusForm() {
                     autoComplete="off" // Disable autosuggest/autocomplete
                     value={field.value.toString()} // Ensure the value is a string for the input
                     onChange={(e) => handleInputChange(e, field)} // Sanitize input
-                    onBlur={(e) => handleBlur(e, field)} // Finalize sanitization on blur
                     onKeyDown={handleKeyDown} // Prevent invalid characters
                   />
                   <ShadcnSlider
@@ -233,7 +224,6 @@ export function RectangleRadiusForm() {
                     autoComplete="off" // Disable autosuggest/autocomplete
                     value={field.value.toString()} // Ensure the value is a string for the input
                     onChange={(e) => handleInputChange(e, field)} // Sanitize input
-                    onBlur={(e) => handleBlur(e, field)} // Finalize sanitization on blur
                     onKeyDown={handleKeyDown} // Prevent invalid characters
                   />
                   <ShadcnSlider
