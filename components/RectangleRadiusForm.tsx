@@ -49,8 +49,8 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
-  const [copySuccess, setCopySuccess] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
+  const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -110,10 +110,9 @@ export function RectangleRadiusForm() {
   const handleCopy = () => {
     if (innerRadius) {
       navigator.clipboard.writeText(innerRadius).then(() => {
-        setCopySuccess(true);
         setTooltipText("Copied!");
+        setTooltipOpen(true);
         setTimeout(() => {
-          setCopySuccess(false);
           setTooltipText("Copy to clipboard");
         }, 3000); // Reset after 3 seconds
       });
@@ -179,23 +178,26 @@ export function RectangleRadiusForm() {
               />
             </FormControl>
             <TooltipProvider delayDuration={0}>
-              <Tooltip>
+              <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     className={`absolute right-1 top-1 h-7 w-7 rounded-sm disabled:opacity-100 disabled:pointer-events-auto transition-opacity duration-200 ${
-                      copySuccess
+                      tooltipText === "Copied!"
                         ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
                         : "text-gray-400 cursor-pointer hover:text-gray-600"
                     }`}
-                    onClick={!copySuccess ? handleCopy : undefined}
-                    disabled={copySuccess}
+                    onClick={handleCopy}
                   >
-                    {copySuccess ? <CheckIcon /> : <ClipboardCopyIcon />}
+                    {tooltipText === "Copied!" ? (
+                      <CheckIcon />
+                    ) : (
+                      <ClipboardCopyIcon />
+                    )}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="top" align="center">
+                <TooltipContent>
                   <p>{tooltipText}</p>
                 </TooltipContent>
               </Tooltip>
