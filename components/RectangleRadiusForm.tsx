@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import {
   ClipboardCopyIcon,
   CheckIcon,
@@ -144,7 +145,7 @@ export function RectangleRadiusForm() {
         }
         timeoutRef.current = setTimeout(() => {
           setTooltipText("Copy to clipboard");
-        }, 2000); // Reset after 3 seconds
+        }, 3000); // Reset after 3 seconds
       });
     }
   };
@@ -169,15 +170,24 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Outer Radius</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Outer Radius"
-                  type="number"
-                  min={0}
-                  max={1024}
-                  value={field.value || ""}
-                  onInput={sanitizeInput}
-                  onChange={(e) => handleChange(e, field)}
-                />
+                <div className="flex items-center space-x-2">
+                  <Input
+                    placeholder="Outer Radius"
+                    type="number"
+                    min={0}
+                    max={1024}
+                    value={field.value || ""}
+                    onInput={sanitizeInput}
+                    onChange={(e) => handleChange(e, field)}
+                  />
+                  <Slider
+                    min={0}
+                    max={1024}
+                    value={[Number(field.value) || 0]}
+                    onValueChange={(value) => field.onChange(String(value[0]))}
+                    className="w-2/3"
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -190,15 +200,24 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Distance from Outer Rectangle</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Distance"
-                  type="number"
-                  min={0}
-                  max={1024}
-                  value={field.value || ""}
-                  onInput={sanitizeInput}
-                  onChange={(e) => handleChange(e, field)}
-                />
+                <div className="flex items-center space-x-2">
+                  <Input
+                    placeholder="Distance"
+                    type="number"
+                    min={0}
+                    max={1024}
+                    value={field.value || ""}
+                    onInput={sanitizeInput}
+                    onChange={(e) => handleChange(e, field)}
+                  />
+                  <Slider
+                    min={0}
+                    max={1024}
+                    value={[Number(field.value) || 0]}
+                    onValueChange={(value) => field.onChange(String(value[0]))}
+                    className="w-2/3"
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
