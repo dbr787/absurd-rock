@@ -57,7 +57,7 @@ const ShadcnSlider = React.memo(function ShadcnSlider({
       max={1024}
       value={[value]}
       onValueChange={(value) => onChange(value[0])}
-      className="w-2/3"
+      className="w-full"
     />
   );
 });
@@ -153,7 +153,7 @@ export function RectangleRadiusForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
+      <form onSubmit={form.handleSubmit(() => {})} className="space-y-6">
         <FormField
           control={form.control}
           name="outerRadius"
@@ -161,7 +161,7 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Outer Radius</FormLabel>
               <FormControl>
-                <div className="flex items-center space-x-2">
+                <div className="space-y-3">
                   <Input
                     placeholder="Outer Radius"
                     type="number"
@@ -190,7 +190,7 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Distance from Outer Rectangle</FormLabel>
               <FormControl>
-                <div className="flex items-center space-x-2">
+                <div className="space-y-3">
                   <Input
                     placeholder="Distance"
                     type="number"
@@ -214,8 +214,8 @@ export function RectangleRadiusForm() {
         />
         <FormItem>
           <FormLabel>Calculated Inner Radius</FormLabel>
-          <div className="relative group">
-            <FormControl>
+          <FormControl className="relative group">
+            <div>
               <Input
                 placeholder="Calculated Inner Radius"
                 type="text"
@@ -224,33 +224,33 @@ export function RectangleRadiusForm() {
                 className="pr-10 cursor-default" // Add padding to the right to accommodate the icon and set cursor to default
                 style={{ cursor: "default" }} // Inline style for default cursor
               />
-            </FormControl>
-            <TooltipProvider delayDuration={0}>
-              <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 ${
-                      tooltipText === "Copied!"
-                        ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
-                        : "text-gray-400 cursor-pointer hover:text-gray-600"
-                    }`}
-                    onClick={handleCopy}
-                  >
-                    {tooltipText === "Copied!" ? (
-                      <CheckIcon />
-                    ) : (
-                      <ClipboardCopyIcon />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tooltipText}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`absolute right-1 top-1 h-7 w-7 rounded-sm opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 ${
+                        tooltipText === "Copied!"
+                          ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
+                          : "text-gray-400 cursor-pointer hover:text-gray-600"
+                      }`}
+                      onClick={handleCopy}
+                    >
+                      {tooltipText === "Copied!" ? (
+                        <CheckIcon />
+                      ) : (
+                        <ClipboardCopyIcon />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{tooltipText}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </FormControl>
         </FormItem>
         <div className="flex space-x-4">
           <Button type="button" onClick={handleReset} variant="outline">
