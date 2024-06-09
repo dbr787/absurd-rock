@@ -20,7 +20,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
-import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
+import {
+  ClipboardCopyIcon,
+  CheckIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   outerRadius: z
@@ -132,6 +136,14 @@ export function RectangleRadiusForm() {
     }
   };
 
+  const handleReset = () => {
+    form.reset(); // Reset the form to default values
+    if (outerRadiusRef.current) {
+      outerRadiusRef.current.focus();
+      outerRadiusRef.current.select(); // Select all text in the input
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
@@ -218,7 +230,15 @@ export function RectangleRadiusForm() {
             </TooltipProvider>
           </div>
         </FormItem>
-        <Button type="submit">Calculate</Button>
+        <div className="flex space-x-4">
+          {/* <Button type="submit">Calculate</Button> */}
+          <Button type="button" onClick={handleReset} variant="outline">
+            Reset
+          </Button>
+          {/* <Button type="button" onClick={handleReset} variant="outline">
+            <ReloadIcon className="mr-2 h-3 w-3" /> Reset
+          </Button> */}
+        </div>
       </form>
     </Form>
   );
