@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input"; // Corrected import statement
+import { Input } from "@/components/ui/input";
 import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
@@ -187,7 +187,7 @@ export function RectangleRadiusForm() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm disabled:opacity-100 disabled:pointer-events-auto transition-opacity duration-200 ${
+                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
                       tooltipText === "Copied!"
                         ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
                         : "text-gray-400 cursor-pointer hover:text-gray-600"
