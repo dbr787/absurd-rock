@@ -76,7 +76,6 @@ export function RectangleRadiusForm() {
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const outerRadiusRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -114,14 +113,6 @@ export function RectangleRadiusForm() {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  useEffect(() => {
-    // Focus and select the first input field when the component mounts
-    if (outerRadiusRef.current) {
-      outerRadiusRef.current.focus();
-      outerRadiusRef.current.select(); // Select all text in the input
-    }
-  }, []);
-
   const sanitizeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, "");
   };
@@ -153,7 +144,7 @@ export function RectangleRadiusForm() {
         }
         timeoutRef.current = setTimeout(() => {
           setTooltipText("Copy to clipboard");
-        }, 3000); // Reset after 3 seconds
+        }, 2000); // Reset after 3 seconds
       });
     }
   };
@@ -165,10 +156,6 @@ export function RectangleRadiusForm() {
     }); // Reset the form to default values
     setTimeout(() => {
       calculateInnerRadius();
-      if (outerRadiusRef.current) {
-        outerRadiusRef.current.focus();
-        outerRadiusRef.current.select(); // Select all text in the input
-      }
     }, 0); // Ensure the calculation is done after the reset
   };
 
@@ -190,7 +177,6 @@ export function RectangleRadiusForm() {
                   value={field.value || ""}
                   onInput={sanitizeInput}
                   onChange={(e) => handleChange(e, field)}
-                  ref={outerRadiusRef} // Add ref to the first input
                 />
               </FormControl>
               <FormMessage />
