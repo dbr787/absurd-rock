@@ -187,7 +187,7 @@ export function RectangleRadiusForm() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+                    className={`absolute right-1 top-1 h-7 w-7 rounded-sm opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 ${
                       tooltipText === "Copied!"
                         ? "text-green-500 cursor-default hover:bg-inherit hover:text-accent-inherit"
                         : "text-gray-400 cursor-pointer hover:text-gray-600"
@@ -208,7 +208,7 @@ export function RectangleRadiusForm() {
             </TooltipProvider>
           </div>
         </FormItem>
-        <Button type="submit">Calculate</Button>
+        {/* <Button type="submit">Calculate</Button> */}
       </form>
     </Form>
   );

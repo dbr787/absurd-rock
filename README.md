@@ -1,6 +1,7 @@
 ## To Do
 
 - [] Improve copy/copied tooltip
+- [] Maybe copy on hover over whole field
 
 ## Original
 
