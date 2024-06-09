@@ -63,26 +63,6 @@ const ShadcnSlider = React.memo(function ShadcnSlider({
 });
 ShadcnSlider.displayName = "ShadcnSlider";
 
-const DefaultSlider = React.memo(function DefaultSlider({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <input
-      type="range"
-      min="0"
-      max="1024"
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="w-2/3"
-    />
-  );
-});
-DefaultSlider.displayName = "DefaultSlider";
-
 export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -197,10 +177,6 @@ export function RectangleRadiusForm() {
                     value={field.value} // Ensure the value is a number
                     onChange={(value) => field.onChange(value)}
                   />
-                  <DefaultSlider
-                    value={field.value} // Ensure the value is a number
-                    onChange={(value) => field.onChange(value)}
-                  />
                 </div>
               </FormControl>
               <FormMessage />
@@ -227,10 +203,6 @@ export function RectangleRadiusForm() {
                     onKeyDown={handleKeyDown} // Prevent invalid characters
                   />
                   <ShadcnSlider
-                    value={field.value} // Ensure the value is a number
-                    onChange={(value) => field.onChange(value)}
-                  />
-                  <DefaultSlider
                     value={field.value} // Ensure the value is a number
                     onChange={(value) => field.onChange(value)}
                   />
