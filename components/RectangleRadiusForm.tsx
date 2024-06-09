@@ -51,8 +51,28 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
+const calculateInitialInnerRadius = (outerRadius: string, distance: string) => {
+  if (outerRadius === "" || distance === "") {
+    return "";
+  }
+
+  const radiusA = Number(outerRadius);
+  const dist = Number(distance);
+  const minRadius = radiusA / Math.PI; // Minimum radius is outer radius divided by pi
+
+  const calculatedInnerRadius = Math.max(minRadius, radiusA - dist);
+  return Number.isInteger(calculatedInnerRadius)
+    ? String(calculatedInnerRadius)
+    : calculatedInnerRadius.toFixed(2);
+};
+
+const defaultOuterRadius = "10";
+const defaultDistance = "4";
+
 export function RectangleRadiusForm() {
-  const [innerRadius, setInnerRadius] = useState<string | null>(null);
+  const [innerRadius, setInnerRadius] = useState<string | null>(
+    calculateInitialInnerRadius(defaultOuterRadius, defaultDistance)
+  );
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,33 +81,35 @@ export function RectangleRadiusForm() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      outerRadius: "10",
-      distance: "4",
+      outerRadius: defaultOuterRadius,
+      distance: defaultDistance,
     },
   });
 
+  const calculateInnerRadius = () => {
+    const { outerRadius, distance } = form.getValues();
+
+    if (outerRadius === "" || distance === "") {
+      setInnerRadius("");
+      return;
+    }
+
+    const radiusA = Number(outerRadius);
+    const dist = Number(distance);
+    const minRadius = radiusA / Math.PI; // Minimum radius is outer radius divided by pi
+
+    const calculatedInnerRadius = Math.max(minRadius, radiusA - dist);
+    setInnerRadius(
+      Number.isInteger(calculatedInnerRadius)
+        ? String(calculatedInnerRadius)
+        : calculatedInnerRadius.toFixed(2)
+    );
+  };
+
   useEffect(() => {
-    const calculateInnerRadius = () => {
-      const { outerRadius, distance } = form.getValues();
-
-      if (outerRadius === "" || distance === "") {
-        setInnerRadius(null);
-        return;
-      }
-
-      const radiusA = Number(outerRadius);
-      const dist = Number(distance);
-      const minRadius = radiusA / Math.PI; // Minimum radius is outer radius divided by pi
-
-      const calculatedInnerRadius = Math.max(minRadius, radiusA - dist);
-      setInnerRadius(
-        Number.isInteger(calculatedInnerRadius)
-          ? String(calculatedInnerRadius)
-          : calculatedInnerRadius.toFixed(2)
-      );
-    };
-
-    const subscription = form.watch(calculateInnerRadius);
+    const subscription = form.watch(() => {
+      calculateInnerRadius();
+    });
     calculateInnerRadius(); // Initial calculation on mount
     return () => subscription.unsubscribe();
   }, [form]);
@@ -137,11 +159,17 @@ export function RectangleRadiusForm() {
   };
 
   const handleReset = () => {
-    form.reset(); // Reset the form to default values
-    if (outerRadiusRef.current) {
-      outerRadiusRef.current.focus();
-      outerRadiusRef.current.select(); // Select all text in the input
-    }
+    form.reset({
+      outerRadius: defaultOuterRadius,
+      distance: defaultDistance,
+    }); // Reset the form to default values
+    setTimeout(() => {
+      calculateInnerRadius();
+      if (outerRadiusRef.current) {
+        outerRadiusRef.current.focus();
+        outerRadiusRef.current.select(); // Select all text in the input
+      }
+    }, 0); // Ensure the calculation is done after the reset
   };
 
   return (
@@ -195,7 +223,7 @@ export function RectangleRadiusForm() {
           <div className="relative group">
             <FormControl>
               <Input
-                placeholder="Calculated Inner Radius"
+                placeholder=""
                 type="text"
                 value={innerRadius || ""}
                 disabled
