@@ -2,6 +2,7 @@
 
 - [] Improve copy/copied tooltip
 - [] Maybe copy on hover over whole field
+- [] When the copied button ends (3s) and the field is not hovered, the copy button should become invisible again
 
 ## Original
 
