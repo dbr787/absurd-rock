@@ -57,7 +57,7 @@ const ShadcnSlider = React.memo(function ShadcnSlider({
       max={1024}
       value={[value]}
       onValueChange={(value) => onChange(value[0])}
-      className="w-full"
+      className="pt-4"
     />
   );
 });
@@ -161,7 +161,7 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Outer Radius</FormLabel>
               <FormControl>
-                <div className="space-y-3">
+                <div>
                   <Input
                     placeholder="Outer Radius"
                     type="number"
@@ -190,7 +190,7 @@ export function RectangleRadiusForm() {
             <FormItem>
               <FormLabel>Distance from Outer Rectangle</FormLabel>
               <FormControl>
-                <div className="space-y-3">
+                <div>
                   <Input
                     placeholder="Distance"
                     type="number"
