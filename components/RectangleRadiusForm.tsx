@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
+import { ResizableBox } from "react-resizable";
+import "react-resizable/css/styles.css"; // Import the necessary CSS for react-resizable
 
 // Define form validation schema
 const formSchema = z.object({
@@ -220,14 +222,19 @@ export function RectangleRadiusForm() {
 
   const innerRectangleWidth = Math.max(0, outerWidth - 2 * distance);
   const innerRectangleHeight = Math.max(0, outerHeight - 2 * distance);
-  const adjustedOuterWidth = Math.max(
-    outerWidth,
-    outerWidth + 2 * distance - 512
-  );
-  const adjustedOuterHeight = Math.max(
-    outerHeight,
-    outerHeight + 2 * distance - 512
-  );
+
+  const handleInnerResize = (e, data) => {
+    const newDistance = Math.max(
+      0,
+      Math.round(
+        (outerWidth - data.size.width) / 2 +
+          (outerHeight - data.size.height) / 2
+      ) / 2
+    );
+    setDistance(newDistance);
+    form.setValue("distance", newDistance);
+    setInnerRadius(calculateInnerRadius(outerRadius, newDistance));
+  };
 
   return (
     <div className="flex space-x-8">
@@ -250,12 +257,18 @@ export function RectangleRadiusForm() {
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
-                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onChange={(e) => {
+                        handleInputChange(e, field);
+                        setOuterWidth(Number(e.target.value));
+                      }} // Sanitize input
                       onKeyDown={handleKeyDown} // Prevent invalid characters
                     />
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setOuterWidth(value);
+                      }}
                       min={256}
                       max={512}
                     />
@@ -283,12 +296,18 @@ export function RectangleRadiusForm() {
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
-                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onChange={(e) => {
+                        handleInputChange(e, field);
+                        setOuterHeight(Number(e.target.value));
+                      }} // Sanitize input
                       onKeyDown={handleKeyDown} // Prevent invalid characters
                     />
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setOuterHeight(value);
+                      }}
                       min={256}
                       max={512}
                     />
@@ -316,12 +335,18 @@ export function RectangleRadiusForm() {
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
-                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onChange={(e) => {
+                        handleInputChange(e, field);
+                        setOuterRadius(Number(e.target.value));
+                      }} // Sanitize input
                       onKeyDown={handleKeyDown} // Prevent invalid characters
                     />
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setOuterRadius(value);
+                      }}
                       max={maxRadius}
                     />
                   </div>
@@ -348,12 +373,18 @@ export function RectangleRadiusForm() {
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
-                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onChange={(e) => {
+                        handleInputChange(e, field);
+                        setDistance(Number(e.target.value));
+                      }} // Sanitize input
                       onKeyDown={handleKeyDown} // Prevent invalid characters
                     />
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setDistance(value);
+                      }}
                       max={maxPadding}
                     />
                   </div>
@@ -415,35 +446,67 @@ export function RectangleRadiusForm() {
       </Form>
 
       {/* Draw Boxes */}
-      <div className="mt-8">
-        <div className="flex justify-center">
+      <div className="mt-8 w-[512px] relative">
+        <div
+          className="absolute flex justify-center w-full"
+          style={{ top: -20 }}
+        >
           <span className="text-xs font-mono">
-            {adjustedOuterWidth}x{adjustedOuterHeight} r{outerRadius}
+            {outerWidth}x{outerHeight} r{outerRadius}
           </span>
         </div>
-        <div
-          className={`relative bg-gray-100 overflow-hidden`}
-          style={{
-            width: `${outerWidth}px`,
-            height: `${outerHeight}px`,
-            borderRadius: `${outerRadius}px`,
-            padding: `${distance}px`,
-          }}
-        >
-          <div
-            className="text-center text-xs font-mono absolute left-0 right-0 mb-2"
+        <div className="absolute inset-0 flex items-center justify-center">
+          <ResizableBox
+            width={outerWidth}
+            height={outerHeight}
+            minConstraints={[256, 256]}
+            maxConstraints={[512, 512]}
+            resizeHandles={["n", "e", "s", "w"]}
+            onResize={(e, data) => {
+              const width = Math.round(data.size.width);
+              const height = Math.round(data.size.height);
+              setOuterWidth(width);
+              setOuterHeight(height);
+              form.setValue("outerWidth", width);
+              form.setValue("outerHeight", height);
+              const newMaxRadius = Math.min(width / 2, height / 2);
+              setMaxRadius(newMaxRadius);
+              if (outerRadius > newMaxRadius) {
+                setOuterRadius(newMaxRadius);
+                form.setValue("outerRadius", newMaxRadius);
+              }
+              const updatedInnerRadius = calculateInnerRadius(
+                outerRadius,
+                distance
+              );
+              setInnerRadius(updatedInnerRadius);
+            }}
+            className="bg-gray-100 relative"
             style={{
-              top: Math.max(0, distance) + "px",
+              borderRadius: `${outerRadius}px`,
+              padding: `${distance}px`,
+              opacity: 0.7, // Add transparency
             }}
           >
-            {innerRectangleWidth}x{innerRectangleHeight} r{innerRadius}
-          </div>
-          <div
-            className="w-full h-full bg-gray-300"
-            style={{
-              borderRadius: `${innerRadius}px`,
-            }}
-          ></div>
+            <ResizableBox
+              width={outerWidth - 2 * distance}
+              height={outerHeight - 2 * distance}
+              minConstraints={[0, 0]}
+              maxConstraints={[outerWidth - 2, outerHeight - 2]}
+              resizeHandles={["s", "w", "n", "e"]}
+              onResize={handleInnerResize}
+              className="bg-gray-300"
+              style={{
+                borderRadius: `${innerRadius}px`,
+                opacity: 0.7, // Add transparency
+              }}
+            >
+              <div className="text-center text-xs font-mono">
+                {Math.max(0, outerWidth - 2 * distance)}x
+                {Math.max(0, outerHeight - 2 * distance)} r{innerRadius}
+              </div>
+            </ResizableBox>
+          </ResizableBox>
         </div>
       </div>
     </div>

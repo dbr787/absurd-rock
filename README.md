@@ -3,6 +3,9 @@
 - [] Improve copy/copied tooltip
 - [] Maybe copy on hover over whole field
 - [] When the copied button ends (3s) and the field is not hovered, the copy button should become invisible again
+- [] Make boxes blue and pink, add handles to different corners for inner/outer rectangle, show h/w/r in different sides/corners
+- [] add inner-columns and inner-rows, make it default 1x1, but allow 12x12
+- [] create a tabbed code box for html/jsx/tailwind that allows to copy the code to generate that thing
 
 ## Original
 
