@@ -25,14 +25,18 @@ import { ClipboardCopyIcon, CheckIcon } from "@radix-ui/react-icons";
 
 // Define form validation schema
 const formSchema = z.object({
-  outerRadius: z.number().min(0).max(256),
+  outerRadius: z.number().min(0),
   distance: z.number().min(0).max(256),
+  outerWidth: z.number().min(256).max(512),
+  outerHeight: z.number().min(256).max(512),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
-const defaultOuterRadius = 10;
-const defaultDistance = 4;
+const defaultOuterRadius = 64;
+const defaultDistance = 32;
+const defaultOuterWidth = 512;
+const defaultOuterHeight = 512;
 
 // Calculate inner radius based on outer radius and distance
 const calculateInnerRadius = (
@@ -50,14 +54,21 @@ const calculateInnerRadius = (
 const ShadcnSlider = React.memo(function ShadcnSlider({
   value,
   onChange,
+  min,
+  max,
+  step,
 }: {
   value: number;
   onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
 }) {
   return (
     <Slider
-      min={0}
-      max={256}
+      min={min}
+      max={max}
+      step={step}
       value={[value]}
       onValueChange={(value) => onChange(value[0])}
       className="pt-4"
@@ -71,6 +82,14 @@ export function RectangleRadiusForm() {
   const [innerRadius, setInnerRadius] = useState<string | null>(null);
   const [outerRadius, setOuterRadius] = useState<number>(defaultOuterRadius);
   const [distance, setDistance] = useState<number>(defaultDistance);
+  const [outerWidth, setOuterWidth] = useState<number>(defaultOuterWidth);
+  const [outerHeight, setOuterHeight] = useState<number>(defaultOuterHeight);
+  const [maxRadius, setMaxRadius] = useState<number>(
+    Math.min(defaultOuterWidth / 2, defaultOuterHeight / 2)
+  );
+  const [maxPadding, setMaxPadding] = useState<number>(
+    Math.min(defaultOuterWidth / 2, defaultOuterHeight / 2)
+  );
   const [initialized, setInitialized] = useState<boolean>(false);
   const [tooltipText, setTooltipText] = useState<string>("Copy to clipboard");
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
@@ -81,6 +100,8 @@ export function RectangleRadiusForm() {
     defaultValues: {
       outerRadius: defaultOuterRadius,
       distance: defaultDistance,
+      outerWidth: defaultOuterWidth,
+      outerHeight: defaultOuterHeight,
     },
   });
 
@@ -93,18 +114,44 @@ export function RectangleRadiusForm() {
     setInnerRadius(initialInnerRadius);
     form.setValue("outerRadius", defaultOuterRadius);
     form.setValue("distance", defaultDistance);
+    form.setValue("outerWidth", defaultOuterWidth);
+    form.setValue("outerHeight", defaultOuterHeight);
     setInitialized(true);
   }, [form]);
 
   useEffect(() => {
-    const subscription = form.watch(({ outerRadius, distance }) => {
-      if (outerRadius !== undefined && distance !== undefined) {
-        setOuterRadius(outerRadius);
-        setDistance(distance);
-        const updatedInnerRadius = calculateInnerRadius(outerRadius, distance);
-        setInnerRadius(updatedInnerRadius);
+    const subscription = form.watch(
+      ({ outerRadius, distance, outerWidth, outerHeight }) => {
+        if (
+          outerRadius !== undefined &&
+          distance !== undefined &&
+          outerWidth !== undefined &&
+          outerHeight !== undefined
+        ) {
+          setOuterRadius(outerRadius);
+          setDistance(distance);
+          setOuterWidth(outerWidth);
+          setOuterHeight(outerHeight);
+          const newMaxRadius = Math.min(outerWidth / 2, outerHeight / 2);
+          const newMaxPadding = Math.min(outerWidth / 2, outerHeight / 2);
+          setMaxRadius(newMaxRadius);
+          setMaxPadding(newMaxPadding);
+          if (outerRadius > newMaxRadius) {
+            form.setValue("outerRadius", newMaxRadius);
+            setOuterRadius(newMaxRadius);
+          }
+          if (distance > newMaxPadding) {
+            form.setValue("distance", newMaxPadding);
+            setDistance(newMaxPadding);
+          }
+          const updatedInnerRadius = calculateInnerRadius(
+            outerRadius,
+            distance
+          );
+          setInnerRadius(updatedInnerRadius);
+        }
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, [form]);
@@ -130,9 +177,13 @@ export function RectangleRadiusForm() {
     form.reset({
       outerRadius: defaultOuterRadius,
       distance: defaultDistance,
+      outerWidth: defaultOuterWidth,
+      outerHeight: defaultOuterHeight,
     });
     setOuterRadius(defaultOuterRadius);
     setDistance(defaultDistance);
+    setOuterWidth(defaultOuterWidth);
+    setOuterHeight(defaultOuterHeight);
     const resetInnerRadius = calculateInnerRadius(
       defaultOuterRadius,
       defaultDistance
@@ -147,7 +198,7 @@ export function RectangleRadiusForm() {
     let sanitizedValue = value.replace(/[^0-9]/g, ""); // Remove non-digit characters
     sanitizedValue = sanitizedValue.replace(/^0+(?!$)/, ""); // Remove leading zeros but keep a single "0" if it's the only character
     const numericValue = parseInt(sanitizedValue, 10);
-    return numericValue > 256 ? "256" : sanitizedValue;
+    return numericValue > 512 ? "512" : sanitizedValue;
   };
 
   // Handle input change and sanitize the value
@@ -167,23 +218,87 @@ export function RectangleRadiusForm() {
     }
   };
 
-  const outerRectangleWidth = 512;
-  const outerRectangleHeight = 256;
-  const innerRectangleWidth = Math.max(0, 512 - 2 * distance);
-  const innerRectangleHeight = Math.max(0, 256 - 2 * distance);
+  const innerRectangleWidth = Math.max(0, outerWidth - 2 * distance);
+  const innerRectangleHeight = Math.max(0, outerHeight - 2 * distance);
   const adjustedOuterWidth = Math.max(
-    outerRectangleWidth,
-    outerRectangleWidth + 2 * distance - 512
+    outerWidth,
+    outerWidth + 2 * distance - 512
   );
   const adjustedOuterHeight = Math.max(
-    outerRectangleHeight,
-    outerRectangleHeight + 2 * distance - 256
+    outerHeight,
+    outerHeight + 2 * distance - 512
   );
 
   return (
-    <Form {...form}>
-      <div className="flex">
-        <form onSubmit={form.handleSubmit(() => {})} className="space-y-6">
+    <div className="flex space-x-8">
+      <Form {...form}>
+        <form className="space-y-6" onSubmit={form.handleSubmit(() => {})}>
+          {/* Outer Width Field */}
+          <FormField
+            control={form.control}
+            name="outerWidth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Outer Width</FormLabel>
+                <FormControl>
+                  <div>
+                    <Input
+                      placeholder="Outer Width"
+                      type="number"
+                      min={256}
+                      max={512}
+                      {...field}
+                      autoComplete="off" // Disable autosuggest/autocomplete
+                      value={field.value.toString()} // Ensure the value is a string for the input
+                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onKeyDown={handleKeyDown} // Prevent invalid characters
+                    />
+                    <ShadcnSlider
+                      value={field.value} // Ensure the value is a number
+                      onChange={(value) => field.onChange(value)}
+                      min={256}
+                      max={512}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Outer Height Field */}
+          <FormField
+            control={form.control}
+            name="outerHeight"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Outer Height</FormLabel>
+                <FormControl>
+                  <div>
+                    <Input
+                      placeholder="Outer Height"
+                      type="number"
+                      min={256}
+                      max={512}
+                      {...field}
+                      autoComplete="off" // Disable autosuggest/autocomplete
+                      value={field.value.toString()} // Ensure the value is a string for the input
+                      onChange={(e) => handleInputChange(e, field)} // Sanitize input
+                      onKeyDown={handleKeyDown} // Prevent invalid characters
+                    />
+                    <ShadcnSlider
+                      value={field.value} // Ensure the value is a number
+                      onChange={(value) => field.onChange(value)}
+                      min={256}
+                      max={512}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Outer Radius Field */}
           <FormField
             control={form.control}
@@ -197,7 +312,7 @@ export function RectangleRadiusForm() {
                       placeholder="Outer Radius"
                       type="number"
                       min={0}
-                      max={256}
+                      max={maxRadius}
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
@@ -207,6 +322,7 @@ export function RectangleRadiusForm() {
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
                       onChange={(value) => field.onChange(value)}
+                      max={maxRadius}
                     />
                   </div>
                 </FormControl>
@@ -228,7 +344,7 @@ export function RectangleRadiusForm() {
                       placeholder="Padding"
                       type="number"
                       min={0}
-                      max={256}
+                      max={maxPadding}
                       {...field}
                       autoComplete="off" // Disable autosuggest/autocomplete
                       value={field.value.toString()} // Ensure the value is a string for the input
@@ -238,6 +354,7 @@ export function RectangleRadiusForm() {
                     <ShadcnSlider
                       value={field.value} // Ensure the value is a number
                       onChange={(value) => field.onChange(value)}
+                      max={maxPadding}
                     />
                   </div>
                 </FormControl>
@@ -295,40 +412,40 @@ export function RectangleRadiusForm() {
             </Button>
           </div>
         </form>
+      </Form>
 
-        {/* Draw Boxes */}
-        <div className="ml-8 mt-8">
-          <div className="text-center">
-            <span className="text-xs font-mono">
-              {adjustedOuterWidth}x{adjustedOuterHeight} r{outerRadius}
-            </span>
-          </div>
+      {/* Draw Boxes */}
+      <div className="mt-8">
+        <div className="flex justify-center">
+          <span className="text-xs font-mono">
+            {adjustedOuterWidth}x{adjustedOuterHeight} r{outerRadius}
+          </span>
+        </div>
+        <div
+          className={`relative bg-gray-100 overflow-hidden`}
+          style={{
+            width: `${outerWidth}px`,
+            height: `${outerHeight}px`,
+            borderRadius: `${outerRadius}px`,
+            padding: `${distance}px`,
+          }}
+        >
           <div
-            className={`relative bg-gray-100 overflow-hidden`}
+            className="text-center text-xs font-mono absolute left-0 right-0 mb-2"
             style={{
-              width: `${outerRectangleWidth}px`,
-              height: `${outerRectangleHeight}px`,
-              borderRadius: `${outerRadius}px`,
-              padding: `${distance}px`,
+              top: Math.max(0, distance) + "px",
             }}
           >
-            <div
-              className="text-center text-xs font-mono absolute left-0 right-0"
-              style={{
-                top: Math.max(0, distance) + "px",
-              }}
-            >
-              {innerRectangleWidth}x{innerRectangleHeight} r{innerRadius}
-            </div>
-            <div
-              className="w-full h-full bg-gray-300"
-              style={{
-                borderRadius: `${innerRadius}px`,
-              }}
-            ></div>
+            {innerRectangleWidth}x{innerRectangleHeight} r{innerRadius}
           </div>
+          <div
+            className="w-full h-full bg-gray-300"
+            style={{
+              borderRadius: `${innerRadius}px`,
+            }}
+          ></div>
         </div>
       </div>
-    </Form>
+    </div>
   );
 }

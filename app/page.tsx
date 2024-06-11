@@ -7,7 +7,6 @@ export default function Home() {
       <div className="border rounded-md p-6 border-solid bg-white shadow-md">
         <RectangleRadiusForm />
       </div>
-      <div className=""></div>
     </div>
   );
 }
