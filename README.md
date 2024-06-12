@@ -6,6 +6,9 @@
 - [] Make boxes blue and pink, add handles to different corners for inner/outer rectangle, show h/w/r in different sides/corners
 - [] add inner-columns and inner-rows, make it default 1x1, but allow 12x12
 - [] create a tabbed code box for html/jsx/tailwind that allows to copy the code to generate that thing
+- [] checkbox to lock/unlock inner radius from outer radius
+- [] allow resizing of inner rectangle but snap to 1/12
+- [] allow different radius for each corner (lock/unlock)
 
 ## Original
 

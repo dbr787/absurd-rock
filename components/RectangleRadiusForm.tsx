@@ -224,13 +224,9 @@ export function RectangleRadiusForm() {
   const innerRectangleHeight = Math.max(0, outerHeight - 2 * distance);
 
   const handleInnerResize = (e, data) => {
-    const newDistance = Math.max(
-      0,
-      Math.round(
-        (outerWidth - data.size.width) / 2 +
-          (outerHeight - data.size.height) / 2
-      ) / 2
-    );
+    const newDistanceX = Math.round((outerWidth - data.size.width) / 2);
+    const newDistanceY = Math.round((outerHeight - data.size.height) / 2);
+    const newDistance = Math.min(newDistanceX, newDistanceY);
     setDistance(newDistance);
     form.setValue("distance", newDistance);
     setInnerRadius(calculateInnerRadius(outerRadius, newDistance));
@@ -492,7 +488,10 @@ export function RectangleRadiusForm() {
               width={outerWidth - 2 * distance}
               height={outerHeight - 2 * distance}
               minConstraints={[0, 0]}
-              maxConstraints={[outerWidth - 2, outerHeight - 2]}
+              maxConstraints={[
+                outerWidth - 2 * distance,
+                outerHeight - 2 * distance,
+              ]}
               resizeHandles={["s", "w", "n", "e"]}
               onResize={handleInnerResize}
               className="bg-gray-300"
