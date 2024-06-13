@@ -1,20 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ResizableBox, ResizableBoxProps } from "react-resizable";
-import Draggable from "react-draggable";
 import "react-resizable/css/styles.css";
 import "tailwindcss/tailwind.css";
 
 const ResizableRectangle: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 256, height: 256 });
   const [borderRadius, setBorderRadius] = useState(0);
-  const [maxRadius, setMaxRadius] = useState(0);
+  const handleRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const maxRadius = Math.min(dimensions.width, dimensions.height) / 2;
-    setMaxRadius(maxRadius);
-  }, [dimensions]);
+  const maxRadius = Math.min(dimensions.width, dimensions.height) / 2;
 
   const onResize: ResizableBoxProps["onResize"] = (event, { size }) => {
     const width = Math.round(size.width);
@@ -22,39 +18,52 @@ const ResizableRectangle: React.FC = () => {
     setDimensions({ width, height });
   };
 
-  const handleDrag = (e: any, data: any) => {
-    const newBorderRadius = Math.max(0, Math.min(maxRadius, data.x));
-    setBorderRadius(newBorderRadius);
+  const startDrag = (e: React.MouseEvent) => {
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startRadius = borderRadius;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+      const newRadius = Math.max(0, Math.min(maxRadius, startRadius + deltaX));
+      setBorderRadius(newRadius);
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
   };
 
   return (
     <div className="p-8 flex flex-col items-center space-y-4">
-      <div className="relative border rounded-md p-6 border-solid bg-white shadow-md w-[320px] h-[320px] flex items-center justify-center">
-        <ResizableBox
-          width={dimensions.width}
-          height={dimensions.height}
-          minConstraints={[4, 4]}
-          maxConstraints={[256, 256]}
-          onResize={onResize}
-          resizeHandles={["s", "e", "w", "n", "se", "sw", "ne", "nw"]}
-          className="bg-blue-200"
-          style={{ borderRadius: `${borderRadius}px` }}
-        ></ResizableBox>
-        <Draggable
-          axis="both"
-          bounds={{ left: 0, top: 0, right: maxRadius, bottom: maxRadius }}
-          onDrag={handleDrag}
-          position={{ x: borderRadius, y: borderRadius }}
-        >
+      <div className="border rounded-md p-8 border-solid bg-white shadow-md w-[320px] h-[320px] flex items-center justify-center">
+        <div className="relative">
+          <ResizableBox
+            width={dimensions.width}
+            height={dimensions.height}
+            minConstraints={[4, 4]}
+            maxConstraints={[256, 256]}
+            onResize={onResize}
+            resizeHandles={["s", "e", "w", "n", "se", "sw", "ne", "nw"]}
+            className="bg-blue-200"
+            style={{ borderRadius: `${borderRadius}px`, position: "relative" }}
+          />
           <div
-            className="w-2 h-2 bg-blue-500 rounded-full cursor-pointer"
+            ref={handleRef}
+            className="w-2 h-2 bg-blue-500 rounded-full cursor-pointer absolute"
             style={{
-              position: "absolute",
-              top: `${borderRadius - 8}px`,
-              left: `${borderRadius - 8}px`,
+              top: `${borderRadius}px`,
+              left: `${borderRadius}px`,
+              transform: `translate(-50%, -50%)`,
             }}
+            onMouseDown={startDrag}
           ></div>
-        </Draggable>
+        </div>
       </div>
       <div className="border rounded-md p-6 border-solid bg-white shadow-md w-[320px] flex items-center justify-center text-center text-xs font-mono">
         Width: {dimensions.width}px, Height: {dimensions.height}px, Border
