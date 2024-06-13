@@ -75,7 +75,7 @@ const ResizableRectangle: React.FC = () => {
   return (
     <div className="p-8 flex flex-col items-center space-y-4">
       <div className="relative border rounded-md p-8 border-solid shadow-md w-[320px] h-[320px] flex items-center justify-center bg-white">
-        <div className="relative group custom-resizable-box">
+        <div className="relative group">
           <ResizableBox
             width={dimensions.width}
             height={dimensions.height}
@@ -89,10 +89,8 @@ const ResizableRectangle: React.FC = () => {
             <div className="w-full h-full relative"></div>
           </ResizableBox>
           <div
-            className={`w-2 h-2 bg-purple-500 rounded-full cursor-pointer absolute transition-opacity ${
-              isDragging
-                ? "opacity-90 z-10"
-                : "opacity-0 group-hover:opacity-90 z-10"
+            className={`z-10 w-2 h-2 bg-purple-500 rounded-full cursor-pointer absolute transition-opacity ${
+              isDragging ? "opacity-100" : "opacity-100 group-hover:opacity-100"
             }`}
             style={{
               top: `${borderRadius}px`,
@@ -102,7 +100,57 @@ const ResizableRectangle: React.FC = () => {
             onMouseDown={startDrag}
           ></div>
           {showLines && (
-            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none transition-opacity duration-200 ease-in-out">
+            <svg className="absolute top-0 left-0 w-full h-full pointer-events-none transition-opacity duration-200 ease-in-out overflow-visible">
+              <defs>
+                <marker
+                  id="markerRed"
+                  markerWidth="4"
+                  markerHeight="4"
+                  refX="2"
+                  refY="2"
+                >
+                  {/* <circle cx="0.5" cy="0.5" r="0.5" className="fill-red-500" /> */}
+                  <rect
+                    x="1"
+                    y="1"
+                    width="2"
+                    height="2"
+                    className="fill-red-500"
+                  />
+                </marker>
+                <marker
+                  id="markerGreen"
+                  markerWidth="4"
+                  markerHeight="4"
+                  refX="2"
+                  refY="2"
+                >
+                  {/* <circle cx="2" cy="2" r="1.5" className="fill-green-500" /> */}
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="3"
+                    height="3"
+                    className="fill-green-500"
+                  />
+                </marker>
+                <marker
+                  id="markerBlue"
+                  markerWidth="4"
+                  markerHeight="4"
+                  refX="2"
+                  refY="2"
+                >
+                  {/* <circle cx="2" cy="2" r="1.5" className="fill-blue-500" /> */}
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="3"
+                    height="3"
+                    className="fill-blue-500"
+                  />
+                </marker>
+              </defs>
               <line
                 x1={borderRadius}
                 y1={borderRadius}
@@ -110,7 +158,11 @@ const ResizableRectangle: React.FC = () => {
                 y2={0}
                 className="stroke-red-500 transition-colors duration-200"
                 strokeWidth="2"
-                strokeDasharray="2,2"
+                strokeDasharray="0,4"
+                strokeLinecap="round"
+                strokeDashoffset={0}
+                // marker-start="url(#markerRed)"
+                marker-end="url(#markerRed)"
               />
               <line
                 x1={borderRadius}
@@ -119,7 +171,11 @@ const ResizableRectangle: React.FC = () => {
                 y2={dimensions.height / 2}
                 className="stroke-green-500 transition-colors duration-200"
                 strokeWidth="2"
-                strokeDasharray="2,2"
+                strokeDasharray="0,4"
+                strokeLinecap="round"
+                strokeDashoffset={0}
+                // marker-start="url(#markerGreen)"
+                marker-end="url(#markerGreen)"
               />
               <line
                 x1={borderRadius}
@@ -128,7 +184,11 @@ const ResizableRectangle: React.FC = () => {
                 y2={0}
                 className="stroke-blue-500 transition-colors duration-200"
                 strokeWidth="2"
-                strokeDasharray="2,2"
+                strokeDasharray="0,4"
+                strokeLinecap="round"
+                strokeDashoffset={0}
+                // marker-start="url(#markerBlue)"
+                marker-end="url(#markerBlue)"
               />
             </svg>
           )}
