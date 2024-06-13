@@ -10,9 +10,17 @@
 - [] allow resizing of inner rectangle but snap to 1/12
 - [] allow different radius for each corner (lock/unlock)
   .
+- [] accordian drop-down for values or code block, tabs for code type (tailwind, jsx, tsx etc.)
 - [] make cursor up and down also move the radius handle (currently only left and right)
-- [] hide handles unless border is hovered
+- [] hide resize handles unless border is hovered
 - [] make radius handle in front but slightly transparent
+- [] make line dots 'move' like ants
+- [] make radius handle smaller as box dimensions go smaller
+- [] hide radius handle on resize handle grab
+- [] hide resize handle on radius handle grab
+- [] only show handles in that area when that corner or side is hovered
+- [] make radius handle draggable towards any corner from the center
+- [] make the area a grid or graph-like paper, then snap to the grid
 
 ## Original
 
