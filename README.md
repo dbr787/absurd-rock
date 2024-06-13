@@ -10,6 +10,8 @@
 - [] allow resizing of inner rectangle but snap to 1/12
 - [] allow different radius for each corner (lock/unlock)
   .
+- [] show pill or tag while resizing or while hovered
+- [] only update colors of text and lines while grabbed
 - [] select grid size (i.e. 1px, 2px, 4px) this will control resize intervals
 - [] hold shift to lock radius while resizing (show help)
 - [] accordian drop-down for values or code block, tabs for code type (tailwind, jsx, tsx etc.)
@@ -22,7 +24,7 @@
 - [] hide resize handle on radius handle grab
 - [] only show handles in that area when that corner or side is hovered
 - [] make radius handle draggable towards any corner from the center
-- [] make the area a grid or graph-like paper, then snap to the grid
+- [Hard] make the area a grid or graph-like paper, then snap to the grid
 
 ## Original
 

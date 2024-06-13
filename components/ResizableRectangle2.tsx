@@ -74,7 +74,7 @@ const ResizableRectangle: React.FC = () => {
 
   return (
     <div className="p-8 flex flex-col items-center space-y-4">
-      <div className="relative border rounded-md p-8 border-solid bg-white shadow-md w-[320px] h-[320px] flex items-center justify-center">
+      <div className="relative border rounded-md p-8 border-solid shadow-md w-[320px] h-[320px] flex items-center justify-center bg-white">
         <div className="relative group custom-resizable-box">
           <ResizableBox
             width={dimensions.width}
@@ -90,7 +90,9 @@ const ResizableRectangle: React.FC = () => {
           </ResizableBox>
           <div
             className={`w-2 h-2 bg-purple-500 rounded-full cursor-pointer absolute transition-opacity ${
-              isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              isDragging
+                ? "opacity-90 z-10"
+                : "opacity-0 group-hover:opacity-90 z-10"
             }`}
             style={{
               top: `${borderRadius}px`,
@@ -106,75 +108,78 @@ const ResizableRectangle: React.FC = () => {
                 y1={borderRadius}
                 x2={0}
                 y2={0}
-                className="stroke-red-500"
-                strokeWidth="1"
-                strokeDasharray="1,2"
+                className="stroke-red-500 transition-colors duration-200"
+                strokeWidth="2"
+                strokeDasharray="2,2"
               />
               <line
                 x1={borderRadius}
                 y1={borderRadius}
                 x2={dimensions.width / 2}
                 y2={dimensions.height / 2}
-                className="stroke-green-500"
-                strokeWidth="1"
-                strokeDasharray="1,2"
+                className="stroke-green-500 transition-colors duration-200"
+                strokeWidth="2"
+                strokeDasharray="2,2"
               />
               <line
                 x1={borderRadius}
                 y1={borderRadius}
                 x2={borderRadius}
                 y2={0}
-                className="stroke-blue-500"
-                strokeWidth="1"
-                strokeDasharray="1,2"
+                className="stroke-blue-500 transition-colors duration-200"
+                strokeWidth="2"
+                strokeDasharray="2,2"
               />
             </svg>
           )}
         </div>
       </div>
-      <div className="border rounded-md p-6 border-solid bg-white shadow-md w-[320px] flex flex-col items-center justify-center text-center text-xs font-mono space-y-2">
+      <div className="border rounded-md p-6 border-solid bg-white shadow-md w-[320px] flex flex-col items-center justify-center text-center text-xs font-mono space-y-1 text-black">
         <div className="flex justify-between w-full">
           <span>Width:</span>
-          <span style={{ width: "80px", textAlign: "right" }}>
+          <span className="w-20 text-right">
             {formatNumber(dimensions.width)}px
           </span>
         </div>
         <div className="flex justify-between w-full">
           <span>Height:</span>
-          <span style={{ width: "80px", textAlign: "right" }}>
+          <span className="w-20 text-right">
             {formatNumber(dimensions.height)}px
           </span>
         </div>
         <div className="flex justify-between w-full">
           <span>Border Radius:</span>
-          <span style={{ width: "80px", textAlign: "right" }}>
+          <span className="w-20 text-right">
             {formatNumber(borderRadius)}px
           </span>
         </div>
-        <div className="flex justify-between w-full">
-          <span className="text-red-500">Corner Distance:</span>
-          <span
-            className="text-red-500"
-            style={{ width: "80px", textAlign: "right" }}
-          >
+        <div
+          className={`flex justify-between w-full transition-colors duration-200 ${
+            isDragging ? "text-red-500" : ""
+          }`}
+        >
+          <span>Corner Distance:</span>
+          <span className="w-20 text-right">
             {formatNumber(distances.toCornerBox)}px
           </span>
         </div>
-        <div className="flex justify-between w-full">
-          <span className="text-green-500">Center Distance:</span>
-          <span
-            className="text-green-500"
-            style={{ width: "80px", textAlign: "right" }}
-          >
+        <div
+          className={`flex justify-between w-full transition-colors duration-200 ${
+            isDragging ? "text-green-500" : ""
+          }`}
+        >
+          <span>Center Distance:</span>
+          <span className="w-20 text-right">
             {formatNumber(distances.toCenterBox)}px
           </span>
         </div>
-        <div className="flex justify-between w-full">
-          <span className="text-blue-500">Edge Distance:</span>
-          <span
-            className="text-blue-500"
-            style={{ width: "80px", textAlign: "right" }}
-          >
+        <div
+          className={`flex justify-between w-full transition-colors duration-200 ${
+            isDragging ? "text-blue-500" : ""
+          }`}
+        >
+          <span>Edge Distance:</span>
+          <span className="w-20 text-right">
             {formatNumber(distances.toEdgeBox)}px
           </span>
         </div>
