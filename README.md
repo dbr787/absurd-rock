@@ -10,6 +10,8 @@
 - [] allow resizing of inner rectangle but snap to 1/12
 - [] allow different radius for each corner (lock/unlock)
   .
+- [] select grid size (i.e. 1px, 2px, 4px) this will control resize intervals
+- [] hold shift to lock radius while resizing (show help)
 - [] accordian drop-down for values or code block, tabs for code type (tailwind, jsx, tsx etc.)
 - [] make cursor up and down also move the radius handle (currently only left and right)
 - [] hide resize handles unless border is hovered

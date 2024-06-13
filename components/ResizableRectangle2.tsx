@@ -8,37 +8,33 @@ import "tailwindcss/tailwind.css";
 const ResizableRectangle: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 256, height: 256 });
   const [borderRadius, setBorderRadius] = useState(0);
-  const [distanceToCenterBox, setDistanceToCenterBox] = useState(0);
-  const [distanceToCornerBox, setDistanceToCornerBox] = useState(0);
-  const [distanceToEdgeBox, setDistanceToEdgeBox] = useState(0);
+  const [distances, setDistances] = useState({
+    toCenterBox: 0,
+    toCornerBox: 0,
+    toEdgeBox: 0,
+  });
   const [showLines, setShowLines] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const maxRadius = Math.min(dimensions.width, dimensions.height) / 2;
 
-  const formatNumber = (num: number) => {
-    return num % 1 === 0 ? num : num.toFixed(2);
-  };
+  const formatNumber = (num: number) => (num % 1 === 0 ? num : num.toFixed(2));
 
   const calculateDistances = (radius: number) => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    const distanceToCenterBox = Math.sqrt(
-      Math.pow(centerX - radius, 2) + Math.pow(centerY - radius, 2)
-    );
-    const distanceToCornerBox = Math.sqrt(2 * Math.pow(radius, 2));
-    const distanceToEdgeBox = radius;
-
-    return { distanceToCenterBox, distanceToCornerBox, distanceToEdgeBox };
+    return {
+      toCenterBox: Math.sqrt(
+        Math.pow(centerX - radius, 2) + Math.pow(centerY - radius, 2)
+      ),
+      toCornerBox: Math.sqrt(2 * Math.pow(radius, 2)),
+      toEdgeBox: radius,
+    };
   };
 
   useEffect(() => {
-    const { distanceToCenterBox, distanceToCornerBox, distanceToEdgeBox } =
-      calculateDistances(borderRadius);
-    setDistanceToCenterBox(distanceToCenterBox);
-    setDistanceToCornerBox(distanceToCornerBox);
-    setDistanceToEdgeBox(distanceToEdgeBox);
+    setDistances(calculateDistances(borderRadius));
   }, [borderRadius, dimensions]);
 
   const onResize: ResizableBoxProps["onResize"] = (event, { size }) => {
@@ -49,31 +45,20 @@ const ResizableRectangle: React.FC = () => {
     const newMaxRadius = Math.min(width, height) / 2;
     const adjustedRadius = Math.min(borderRadius, newMaxRadius);
     setBorderRadius(adjustedRadius);
-
-    const { distanceToCenterBox, distanceToCornerBox, distanceToEdgeBox } =
-      calculateDistances(adjustedRadius);
-    setDistanceToCenterBox(distanceToCenterBox);
-    setDistanceToCornerBox(distanceToCornerBox);
-    setDistanceToEdgeBox(distanceToEdgeBox);
+    setDistances(calculateDistances(adjustedRadius));
   };
 
   const startDrag = (e: React.MouseEvent) => {
     setShowLines(true);
     setIsDragging(true);
     const startX = e.clientX;
-    const startY = e.clientY;
     const startRadius = borderRadius;
 
     const onMouseMove = (moveEvent: MouseEvent) => {
       const deltaX = moveEvent.clientX - startX;
       const newRadius = Math.max(0, Math.min(maxRadius, startRadius + deltaX));
       setBorderRadius(newRadius);
-
-      const { distanceToCenterBox, distanceToCornerBox, distanceToEdgeBox } =
-        calculateDistances(newRadius);
-      setDistanceToCenterBox(distanceToCenterBox);
-      setDistanceToCornerBox(distanceToCornerBox);
-      setDistanceToEdgeBox(distanceToEdgeBox);
+      setDistances(calculateDistances(newRadius));
     };
 
     const onMouseUp = () => {
@@ -172,7 +157,7 @@ const ResizableRectangle: React.FC = () => {
             className="text-red-500"
             style={{ width: "80px", textAlign: "right" }}
           >
-            {formatNumber(distanceToCornerBox)}px
+            {formatNumber(distances.toCornerBox)}px
           </span>
         </div>
         <div className="flex justify-between w-full">
@@ -181,7 +166,7 @@ const ResizableRectangle: React.FC = () => {
             className="text-green-500"
             style={{ width: "80px", textAlign: "right" }}
           >
-            {formatNumber(distanceToCenterBox)}px
+            {formatNumber(distances.toCenterBox)}px
           </span>
         </div>
         <div className="flex justify-between w-full">
@@ -190,7 +175,7 @@ const ResizableRectangle: React.FC = () => {
             className="text-blue-500"
             style={{ width: "80px", textAlign: "right" }}
           >
-            {formatNumber(distanceToEdgeBox)}px
+            {formatNumber(distances.toEdgeBox)}px
           </span>
         </div>
       </div>
