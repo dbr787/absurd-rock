@@ -9,6 +9,10 @@
 - [] checkbox to lock/unlock inner radius from outer radius
 - [] allow resizing of inner rectangle but snap to 1/12
 - [] allow different radius for each corner (lock/unlock)
+  .
+- [] make cursor up and down also move the radius handle (currently only left and right)
+- [] hide handles unless border is hovered
+- [] make radius handle in front but slightly transparent
 
 ## Original
 
